@@ -1,13 +1,16 @@
 const express = require("express");
 const app = express();
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const db = require("./models/db");
+const io = new Server(server);
+
 require("dotenv").config();
 
 const errorHandler = require("./middlewares/errorHandler");
+const userRoutes = require("./routes/user");
 
-const noteRouter = require("./routes/note");
-const userRoute = require("./routes/user");
-
-const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
 
@@ -20,7 +23,7 @@ app.use(
   express.static(path.join(__dirname, "node_modules/bootstrap/dist/js"))
 );
 app.use(morgan("dev"));
-// app.use(helmet());
+
 app.use((req, res, next) => {
   res.append("Access-Control-Allow-Origin", ["*"]);
   res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
@@ -38,11 +41,43 @@ app.get("/login", (req, res, next) => {
   res.sendFile("./pages/login.html", { root: __dirname });
 });
 
-app.use("/api/notes", noteRouter);
-app.use("/api/users", userRoute);
-app.use((req, res, next) => {
-  res.status(404).json({ message: "Invalid request" });
-});
 app.use(errorHandler); //Middleware to handle errors produced in the server
+app.use("/api/users/", userRoutes);
+io.on("connection", (socket) => {
+  console.log("user-connected");
+  socket.on("fetch-notes", async () => {
+    const notes = await db.Note.findAll({ include: db.User });
+    // console.log("return-notes");
+    io.sockets.emit("return-notes", notes);
+  });
+
+  socket.on("fetch-user-notes", async (user_id) => {
+    const notes = await db.Note.findAll({ where: { user_id } });
+    socket.emit("return-user-notes", notes);
+  });
+
+  socket.on("submit-new-note", async (data) => {
+    const { title, content, user_id } = data;
+    if (user_id) {
+      const note = await db.Note.create({ title, content, user_id });
+      await note.save();
+
+      io.sockets.emit("submit-success");
+    }
+  });
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+const port = process.env.PORT;
+db.sequelize.authenticate().then(() => {
+  db.sequelize.sync({ force: false }).then(() => {
+    console.log("Connected to postgres");
+    server.listen(port, () => {
+      console.log(`listening on port ${port}`);
+    });
+  });
+});
 
 module.exports = app;
