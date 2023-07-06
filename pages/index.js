@@ -1,16 +1,18 @@
+const host_url = "http://localhost:5001";
+
 const user_id = localStorage.getItem("user_id");
 const username = localStorage.getItem("username");
-const host_url = "http://192.168.0.145:5001";
+
 let submit = document.getElementById("create_button");
 let allNotesContainer = document.getElementById("allnotes");
 let myNotesContainer = document.getElementById("mynotes");
+const login_button = document.getElementById("main_nav_login");
+
 const socket = io();
 
 if (!user_id || !username) {
   window.location = "/login";
 }
-
-const login_button = document.getElementById("main_nav_login");
 
 login_button.addEventListener("click", () => {
   localStorage.removeItem("user_id");
@@ -19,7 +21,7 @@ login_button.addEventListener("click", () => {
 
 document.getElementById("main_nav_login").innerText = username;
 
-//fetch all notes
+//Fetch all notes
 socket.emit("fetch-notes");
 socket.on("return-notes", (data) => {
   allNotesContainer.innerHTML = "";
@@ -74,7 +76,7 @@ socket.on("return-user-notes", (data) => {
   });
 });
 socket.on("submit-success", () => {
-  socket.emit("fetch-user-notes", user_id);
+  socket.emit("fetch-user-notes", user_id); //refresh list of notes on successful creation of new note
   socket.emit("fetch-notes");
 });
 

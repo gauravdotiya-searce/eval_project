@@ -1,4 +1,4 @@
-const host_url = "http://192.168.0.145:5001";
+const host_url = "http://localhost:5001";
 let submitButton = document.getElementById("login_submit");
 
 async function postData(credentials) {

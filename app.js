@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const http = require("http");
+const db = require("./models/db");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const db = require("./models/db");
 const io = new Server(server);
 
 require("dotenv").config();
@@ -46,23 +46,22 @@ app.use("/api/users/", userRoutes);
 io.on("connection", (socket) => {
   console.log("user-connected");
   socket.on("fetch-notes", async () => {
-    const notes = await db.Note.findAll({ include: db.User });
-    // console.log("return-notes");
+    const notes = await db.Note.findAll({ include: db.User }); //Returns all notes
     io.sockets.emit("return-notes", notes);
   });
 
   socket.on("fetch-user-notes", async (user_id) => {
-    const notes = await db.Note.findAll({ where: { user_id } });
+    const notes = await db.Note.findAll({ where: { user_id } }); //Returns all notes of a particular user
     socket.emit("return-user-notes", notes);
   });
 
   socket.on("submit-new-note", async (data) => {
     const { title, content, user_id } = data;
     if (user_id) {
-      const note = await db.Note.create({ title, content, user_id });
+      const note = await db.Note.create({ title, content, user_id }); //Create new note
       await note.save();
 
-      io.sockets.emit("submit-success");
+      io.sockets.emit("submit-success"); //emit event on successfull note creation
     }
   });
   socket.on("disconnect", () => {
