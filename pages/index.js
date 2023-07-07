@@ -1,4 +1,4 @@
-const host_url = "http://localhost:5001";
+const host_url = "http://loaclhost:5001";
 
 const user_id = localStorage.getItem("user_id");
 const username = localStorage.getItem("username");
@@ -6,7 +6,8 @@ const username = localStorage.getItem("username");
 let submit = document.getElementById("create_button");
 let allNotesContainer = document.getElementById("allnotes");
 let myNotesContainer = document.getElementById("mynotes");
-const login_button = document.getElementById("main_nav_login");
+let login_button = document.getElementById("main_nav_login");
+let createForm = document.getElementById("create-form");
 
 const socket = io();
 
@@ -85,4 +86,7 @@ submit.addEventListener("click", async () => {
   let description = document.getElementById("descInput").value;
 
   socket.emit("submit-new-note", { user_id, title, content: description });
+});
+createForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 });

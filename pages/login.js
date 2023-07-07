@@ -1,5 +1,6 @@
 const host_url = "http://localhost:5001";
 let submitButton = document.getElementById("login_submit");
+let loginForm = document.getElementById("login-form");
 
 async function postData(credentials) {
   const { username, password } = credentials;
@@ -31,4 +32,8 @@ submitButton.addEventListener("click", async () => {
   //remove user from local storage, acts like logout
   localStorage.removeItem("user_id");
   localStorage.removeItem("username");
+});
+
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault()
 });

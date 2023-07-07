@@ -43,6 +43,7 @@ app.get("/login", (req, res, next) => {
 
 app.use(errorHandler); //Middleware to handle errors produced in the server
 app.use("/api/users/", userRoutes);
+
 io.on("connection", (socket) => {
   console.log("user-connected");
   socket.on("fetch-notes", async () => {
@@ -70,6 +71,7 @@ io.on("connection", (socket) => {
 });
 
 const port = process.env.PORT;
+
 db.sequelize.authenticate().then(() => {
   db.sequelize.sync({ force: false }).then(() => {
     console.log("Connected to postgres");

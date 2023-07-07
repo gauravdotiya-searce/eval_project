@@ -45,17 +45,17 @@
 
     <div class="container my-5">
       <h1>Create a New Note</h1>
-      <form>
+      <form id="create-form">
         <div class="mb-3">
           <label for="titleInput" class="form-label">Title</label>
           <input type="text" class="form-control" id="titleInput" />
         </div>
         <div class="mb-3">
           <label for="descInput" class="form-label">Description</label>
-          <textarea type="text" class="form-control" id="descInput"></textarea>
+          <input type="text" class="form-control" id="descInput" />
         </div>
 
-        <button type="button" id="create_button" class="btn btn-primary">
+        <button type="submit" id="create_button" class="btn btn-primary">
           Create
         </button>
       </form>
@@ -63,13 +63,11 @@
 
     <div class="container mb-5">
       <h1>My Notes</h1>
-      <div data-bs-theme="light" class="row" id="mynotes">
-      </div>
+      <div data-bs-theme="light" class="row" id="mynotes"></div>
     </div>
     <div class="container">
       <h1>All Notes</h1>
-      <div data-bs-theme="light" class="row" id="allnotes">
-      </div>
+      <div data-bs-theme="light" class="row" id="allnotes"></div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="index.js"></script>
